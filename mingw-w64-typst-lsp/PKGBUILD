@@ -11,7 +11,7 @@ mingw_arch=('mingw64' 'ucrt64' 'clang64' 'mingw32' 'clang32' 'clangarm64')
 url='https://github.com/nvarner/typst-lsp'
 license=('spdx:MIT')
 makedepends=("${MINGW_PACKAGE_PREFIX}-rust")
-source=("${_realname}-${pkgver}.tar.gz::typst-lsp/archive/refs/tags/v${pkgver}.tar.gz")
+source=("${_realname}-${pkgver}.tar.gz::https://github.com/nvarner/typst-lsp/archive/refs/tags/v${pkgver}.tar.gz")
 sha256sums=('e8b7b678dbfaa531c130382afdc22a42c6934d894971b82160ca652c91615605')
 
 prepare() {
