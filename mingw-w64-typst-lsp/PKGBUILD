@@ -1,0 +1,38 @@
+# Maintainer: Biswapriyo Nath <nathbappai@gmail.com>
+
+_realname=typst-lsp
+pkgbase=mingw-w64-${_realname}
+pkgname=("${MINGW_PACKAGE_PREFIX}-${_realname}")
+pkgver=0.4.1
+pkgrel=1
+pkgdesc='A brand-new language server for Typst (mingw-w64)'
+arch=('any')
+mingw_arch=('mingw64' 'ucrt64' 'clang64' 'mingw32' 'clang32' 'clangarm64')
+url='https://github.com/nvarner/typst-lsp'
+license=('spdx:MIT')
+makedepends=("${MINGW_PACKAGE_PREFIX}-rust")
+source=("${_realname}-${pkgver}.tar.gz::typst-lsp/archive/refs/tags/v${pkgver}.tar.gz")
+sha256sums=('e8b7b678dbfaa531c130382afdc22a42c6934d894971b82160ca652c91615605')
+
+prepare() {
+  cp -r ${_realname}-${pkgver} build-${MSYSTEM}
+  ${MINGW_PREFIX}/bin/cargo fetch \
+  --locked \
+  --manifest-path build-${MSYSTEM}/Cargo.toml
+}
+
+build() {
+${MINGW_PREFIX}/bin/cargo build \
+  --release \
+  --frozen \
+  --manifest-path build-${MSYSTEM}/Cargo.toml
+}
+
+package() {
+  ${MINGW_PREFIX}/bin/cargo install \
+  --frozen \
+  --offline \
+  --no-track \
+  --path build-${MSYSTEM} \
+  --root ${pkgdir}${MINGW_PREFIX}
+}
