@@ -35,4 +35,9 @@ package() {
   --no-track \
   --path build-${MSYSTEM} \
   --root ${pkgdir}${MINGW_PREFIX}
+
+  install -Dm644 build-${MSYSTEM}/LICENSE-Apache-2.0.txt \
+    "${pkgdir}${MINGW_PREFIX}"/share/licenses/$pkgname/LICENSE-Apache-2.0.txt
+  install -Dm644 build-${MSYSTEM}/LICENSE-MIT.txt \
+    "${pkgdir}${MINGW_PREFIX}"/share/licenses/$pkgname/LICENSE-MIT.txt
 }
