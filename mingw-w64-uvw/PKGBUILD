@@ -1,0 +1,57 @@
+# Maintainer: Some One <some.one@some.email.com>
+
+_realname=uvw
+pkgbase=mingw-w64-${_realname}
+pkgname=("${MINGW_PACKAGE_PREFIX}-${_realname}")
+pkgver=3.0.0
+pkgrel=1
+pkgdesc="A libuv wrapper in modern C++ (mingw-w64)"
+arch=('any')
+mingw_arch=('mingw32' 'mingw64' 'ucrt64' 'clang64' 'clang32')
+url='https://github.com/skypjack/uvw'
+license=('MIT')
+makedepends=("${MINGW_PACKAGE_PREFIX}-cmake"
+             "${MINGW_PACKAGE_PREFIX}-ninja"
+             "${MINGW_PACKAGE_PREFIX}-cc"
+             "${MINGW_PACKAGE_PREFIX}-libuv"
+             "${MINGW_PACKAGE_PREFIX}-libc++")
+source=("${_realname}-${pkgver}.tar.gz::https://github.com/skypjack/${_realname}/archive/v${pkgver}_libuv_v1.44.tar.gz")
+sha256sums=('aca0ffcbcc27a3cca2c9be608b99a75db85c91e9f1735e2abb5269e8c22c6e61')
+
+prepare() {
+  cd "${srcdir}"
+  mv "${_realname}-${pkgver}"_* "${_realname}-${pkgver}"
+}
+
+build() {
+  cd "${srcdir}/${_realname}-${pkgver}"
+  mkdir -p "${srcdir}/build-${MSYSTEM}" && cd "${srcdir}/build-${MSYSTEM}"
+
+  declare -a extra_config
+  if check_option "debug" "n"; then
+    extra_config+=("-DCMAKE_BUILD_TYPE=Release")
+  else
+    extra_config+=("-DCMAKE_BUILD_TYPE=Debug")
+  fi
+
+  MSYS2_ARG_CONV_EXCL="-DCMAKE_INSTALL_PREFIX=" \
+    "${MINGW_PREFIX}"/bin/cmake.exe \
+      -GNinja \
+      -DCMAKE_INSTALL_PREFIX="${MINGW_PREFIX}" \
+      "${extra_config[@]}" \
+      -DFIND_LIBUV=ON \
+      -DFETCH_LIBUV=OFF \
+      -DBUILD_UVW_LIBS=ON \
+      -DBUILD_UVW_SHARED_LIB=ON \
+      ../${_realname}-${pkgver}
+
+  "${MINGW_PREFIX}"/bin/cmake.exe --build .
+}
+
+package() {
+  cd "${srcdir}/build-${MSYSTEM}"
+
+  DESTDIR="${pkgdir}" "${MINGW_PREFIX}"/bin/cmake.exe --install .
+
+  install -Dm644 "${srcdir}/${_realname}-${pkgver}/LICENSE" "${pkgdir}${MINGW_PREFIX}/share/licenses/${_realname}/LICENSE"
+}
