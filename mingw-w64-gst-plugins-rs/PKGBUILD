@@ -5,7 +5,7 @@ pkgbase=mingw-w64-${_realname}
 pkgname=${MINGW_PACKAGE_PREFIX}-${_realname}
 pkgdesc='GStreamer plugins written in Rust (mingw-w64)' 
 url="https://gitlab.freedesktop.org/gstreamer/$_realname"
-pkgver=0.10.6
+pkgver=0.10.7
 pkgrel=1
 license=('spdx:LGPL-3.0-or-later'
          'spdx:Apache-2.0'
@@ -20,7 +20,7 @@ makedepends=(${MINGW_PACKAGE_PREFIX}-pkgconf
              ${MINGW_PACKAGE_PREFIX}-rust
              ${MINGW_PACKAGE_PREFIX}-cargo-c)
 source=("$url/-/archive/$pkgver/$_realname-$pkgver.tar.bz2")
-sha256sums=('90af993b28f050e2d682582ca1bde440665e75a5fbaec6577cafc609e24f2d92')
+sha256sums=('2d83039d061ed38a3817eddac5ac409507b5c9f25563116340f376d7cc5b0148')
 mingw_arch=('mingw32' 'mingw64' 'ucrt64' 'clang64' 'clang32')
 arch=(any)
 
@@ -29,18 +29,26 @@ prepare() {
   cargo fetch
 }
 
+_cargo_opts=(--workspace
+             --offline
+             --release
+             --library-type=cdylib
+             --prefix="${MINGW_PREFIX}"
+             --exclude gst-plugin-csound)
+
 build() {
   cd $_realname-$pkgver
-  MSYS2_ARG_CONV_EXCL="--prefix=" cargo cbuild --offline --release --library-type=cdylib --prefix="${MINGW_PREFIX}"
+  MSYS2_ARG_CONV_EXCL="--prefix=" cargo cbuild "${_cargo_opts[@]}"
 }
 
 check() {
   cd $_realname-$pkgver
-  MSYS2_ARG_CONV_EXCL="--prefix=" cargo ctest --offline --release --library-type=cdylib --prefix="${MINGW_PREFIX}" --target-dir=tests-build
+  MSYS2_ARG_CONV_EXCL="--prefix=" cargo ctest "${_cargo_opts[@]}" --target-dir=tests-build
 }
 
 package() {
   cd $_realname-$pkgver
-  MSYS2_ARG_CONV_EXCL="--prefix=" cargo cinstall --offline --release --library-type=cdylib --prefix="${MINGW_PREFIX}" --destdir="$pkgdir"
+  MSYS2_ARG_CONV_EXCL="--prefix=" cargo cinstall "${_cargo_opts[@]}" --destdir="$pkgdir"
+  rm "$pkgdir/$MINGW_PREFIX"/lib/gstreamer-1.0/*.def
   install -Dm644 -t "$pkgdir/$MINGW_PREFIX"/share/licenses/$_realname/ LICENSE*
 }
