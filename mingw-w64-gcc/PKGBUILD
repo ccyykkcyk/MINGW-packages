@@ -41,6 +41,7 @@ makedepends=("${MINGW_PACKAGE_PREFIX}-${_realname}"
              "${MINGW_PACKAGE_PREFIX}-gmp"
              "${MINGW_PACKAGE_PREFIX}-isl"
              "${MINGW_PACKAGE_PREFIX}-libiconv"
+             "${MINGW_PACKAGE_PREFIX}-gettext"
              "${MINGW_PACKAGE_PREFIX}-mpc"
              "${MINGW_PACKAGE_PREFIX}-mpfr"
              "${MINGW_PACKAGE_PREFIX}-windows-default-manifest"
@@ -266,7 +267,6 @@ build() {
     --disable-multilib \
     --disable-rpath \
     --disable-win32-registry \
-    --disable-nls \
     --disable-werror \
     --disable-symvers \
     --with-libiconv \
